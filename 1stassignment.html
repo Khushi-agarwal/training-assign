@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .dropdown {
+              position: relative;
+              display: inline-block;
+            }
+            
+            .dropdown-content {
+              display: none;
+              position: absolute;
+              background-color: #f9f9f9;
+              min-width: 160px;
+              box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+              padding: 12px 16px;
+              z-index: 1;
+            }
+            
+            .dropdown:hover .dropdown-content {
+              display: block;
+            }
+            </style>
+    </head>
+    <body>
+        <div style="background-color: black;">
+        <div style=" margin-left: 650px; margin-top: 50px;">
+       <div class="dropdown">
+    <button style="color:rgb(33, 28, 28)">File</button>
+    <div class="dropdown-content">
+        <a href="#">Link 1</a><br>
+        <a href="#">Link 2</a><br>
+        <a href="#">Link 3</a><br>
+    </div><br>
+</div>
+<div class="dropdown">
+    <button>View</button>
+    <div class="dropdown-content">
+        <a href="#">Link 1</a><br>
+        <a href="#">Link 2</a><br>
+        <a href="#">Link 3</a><br>
+    </div><br>
+    </div>
+    <div class="dropdown">
+        <button>Home</button>
+        <div class="dropdown-content">
+            <a href="#">Link 1</a><br>
+            <a href="#">Link 2</a><br>
+            <a href="#">Link 3</a><br>
+        </div><br>
+       </div>
+    </div>
+    </div>
+    </body>
+</html>
