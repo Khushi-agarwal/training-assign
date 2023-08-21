@@ -16,9 +16,9 @@ select emp_no,emp_name,emp_sal,d.deptno,dept_name,dept_manager,city,state  from 
 | DEF          |         6400 |
 +--------------+--------------+
 
-select emp_sal from emp ORDER BY emp_sal DESC limit 4,1;
+select min(emp_sal) from (select distinct emp_sal from emp order by emp_sal desc limit 4) as salaries;
 +---------+
-| emp_sal |
+| min(emp_sal) |
 +---------+
 |     400 |
 +---------+
