@@ -9,7 +9,7 @@ public class productdao {
         product ps = null;
         ordered od=null;
         try (Connection con = DriverManager.getConnection(url, "root", "Gainsight");
-             PreparedStatement pst= con.prepareStatement("select * from product where ?=(select prod_id from ordered_products);")) 
+             PreparedStatement pst= con.prepareStatement("select product_name, product_price, ordered_date from product p join ordered_products op on p.prod_id = op.prod_id join product_order o on op.order_id = o.order_id where productId = ?;")) 
             {
             pst.setInt(1, productId);
             ResultSet rs = pst.executeQuery();
