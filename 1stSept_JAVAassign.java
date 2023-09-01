@@ -88,6 +88,10 @@ public class Book {
     public double getPrice() {
         return price;
     }
+    public String toString()
+    {
+         return b.getBookId() + " " + b.getTitle() + " " + b.getAuthor() + " " + b.getCategory() + " " + b.getPrice();
+    }
 }
 
 //BookStore.java
@@ -227,18 +231,18 @@ public class BookUtil {
         String titlesearch=sc.next();
      Book  b= bsd.searchByTitle(titlesearch);
      if(b!=null)
-         System.out.println(b.getBookId()+" "+b.getTitle()+" "+b.getAuthor()+" "+b.getCategory()+" "+b.getPrice());
+         System.out.println(b.toString(b));
      else
          System.out.println("No entry found");
         System.out.println("Enter the author name for which details need to be found");
         String authorsearch=sc.next();
         ArrayList<Book> blist=bsd.searchByAuthor(authorsearch);
         for(Book b1:blist)
-            System.out.println(b1.getBookId()+" "+b1.getTitle()+" "+b1.getAuthor()+" "+b1.getCategory()+" "+b1.getPrice());
+            System.out.println(b1.toString(b1));
         System.out.println("Displaying the details of all the books present");
         ArrayList<Book> all=bsd.displayAll();
         for(Book ba:all)
-            System.out.println(ba.getBookId()+" "+ba.getTitle()+" "+ba.getAuthor()+" "+ba.getCategory()+" "+ba.getPrice());
+            System.out.println(ba.toString(ba));
 
     }
 }
