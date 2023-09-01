@@ -1,124 +1,123 @@
-package com.Aug29;
-
+//Make a bankaccount class and transaction class such that the find balance thread is called always before the read balance thread.
 import javax.naming.InsufficientResourcesException;
-
-public class BankAccount {
-
-    int accountNumber;
-    String accountStatus;
-    String openedDate;
-    double balanceAmount;
-    BankAccount(){};
-    BankAccount(int accountNumber,String accountStatus,String openedDate,double balanceAmount)
+import java.util.concurrent.Semaphore;
+public class BankAccount
+{
+    private int accountNo;
+    private double balance;
+    public BankAccount(){}
+    public BankAccount(int accountNo,double balance)
     {
-        this.accountNumber=accountNumber;
-        this.accountStatus=accountStatus;
-        this.openedDate=openedDate;
-        this.balanceAmount=balanceAmount;
+        this.accountNo=accountNo;
+        this.balance=balance;
     }
-
-    public void setAccountNumber(int accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-    public void setAccountStatus(String accountStatus)
+    public void setBalance(double balance)
     {
-        this.accountStatus=accountStatus;
+        this.balance=balance;
     }
 
-    public void setBalanceAmount(double balanceAmount) {
-        this.balanceAmount = balanceAmount;
+    public void setAccountNo(int accountNo) {
+        this.accountNo = accountNo;
     }
 
-    public void setOpenedDate(String openedDate) {
-        this.openedDate = openedDate;
+    public int getAccountNo() {
+        return accountNo;
     }
+
+    public double getBalance() {
+        return balance;
+    }
+
 }
 class Transaction
 {
-
-    synchronized public static void deposit(BankAccount acc,double amount)
+    Semaphore findBalance=new Semaphore(0);
+    Semaphore modifyBalance=new Semaphore(1);
+    public  void transact(BankAccount acc,double amount,char ttype)
     {
-        acc.balanceAmount+=amount;
-
-    }
-   synchronized public static void withdraw(BankAccount acc,double amount) throws InsufficientResourcesException {
-        if(checkBalance(acc)<amount)
-            throw new InsufficientResourcesException();
-        else {
-            acc.balanceAmount -= amount;
-            System.out.println(acc.balanceAmount);}
-
-
-    }
-   synchronized public static double checkBalance(BankAccount acc)
-    {
-        return acc.balanceAmount;
-    }
-}
-class BalanceModifyThread implements  Runnable
-{
-    Thread t;
-    Transaction t1;
-    BankAccount ba;
-    BalanceModifyThread(Transaction t1,BankAccount ba)
-    {
-        t=new Thread(this);
-        this.t1=t1;
-        this.ba=ba;
-        t.start();
-    }
-
-
-    public void run() {
-        try {
-            t1.deposit(ba,9000);
-            t1.withdraw(ba,5000);
-
-        } catch (InsufficientResourcesException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-//it widthdraws money and should be able to access checkBalance
-    //preference should be given to this thread
-}
-class ReadBalanceThread implements Runnable{
-
-    Thread t;
-    Transaction t3;
-    BankAccount ba;
-    ReadBalanceThread(Transaction t3,BankAccount ba)
-    {
-        t=new Thread(this);
-        this.t3=t3;
-        this.ba=ba;
-        t.start();
-    }
-
-
-    public void run() {
-        System.out.println( t3.checkBalance(ba));
-
-
-    }
-    //it should access the check balance
-}
-class testinggg
-{
-    public static void main(String[] args) {
-        BankAccount ba=new BankAccount(101,"Active","23/08/2023",90000);
-
-        Transaction t1=new Transaction();
-        BalanceModifyThread bt=new BalanceModifyThread(t1,ba);
-        ReadBalanceThread rt=new ReadBalanceThread(t1,ba);
         try
         {
-            bt.t.join();
-            rt.t.join();
+            modifyBalance.acquire();
         }
         catch(InterruptedException ex)
         {
-            System.out.println(ex);
+            ex.printStackTrace();
+        }
+        if(ttype=='D' || ttype=='d')
+        acc.setBalance(acc.getBalance()+amount);
+        else if(ttype=='W' || ttype=='w')
+            acc.setBalance(acc.getBalance()-amount);
+        findBalance.release();
+
+    }
+    public void checkBalance(BankAccount acc)
+    {
+        try
+        {
+            findBalance.acquire();
+        }
+        catch(InterruptedException ex)
+        {
+            ex.printStackTrace();
+        }
+        System.out.println(acc.getBalance());
+        modifyBalance.release();
+    }
+}
+
+class ModifyBalanceThread implements Runnable {
+    BankAccount acc;
+    Transaction trans;
+    double amount;
+Thread t;
+    public ModifyBalanceThread(BankAccount acc, Transaction trans, double amount) {
+        this.acc = acc;
+        this.trans = trans;
+        this.amount = amount;
+        t=new Thread(this);
+        t.start();
+    }
+
+    public void run() {
+        trans.transact(acc, amount, 'D');
+        System.out.println(acc.getAccountNo()+" Balance is modified");
+    }
+}
+class FindBalanceThread implements Runnable
+{
+    BankAccount acc;
+    Transaction trans;
+    Thread t;
+    public FindBalanceThread(BankAccount acc,Transaction trans)
+    {
+        this.acc=acc;
+        this.trans=trans;
+       t= new Thread(this);
+       t.start();
+    }
+    public void run()
+    {
+        trans.checkBalance(acc);
+    }
+
+}
+
+class Test123
+{
+    public static void main(String[] args) {
+        BankAccount acc1=new BankAccount(7001,15000);
+        Transaction trans1=new Transaction();
+        FindBalanceThread fbt=new FindBalanceThread(acc1,trans1);
+        ModifyBalanceThread mbt=new ModifyBalanceThread(acc1,trans1,3000.45);
+        try
+        {
+            fbt.t.join();
+            mbt.t.join();
+        }
+        catch(InterruptedException ex)
+        {
+            ex.printStackTrace();
         }
     }
 }
+
