@@ -1,0 +1,25 @@
+Query1-
+db.createCollection("employee");
+db.employee.insertOne({"name":"John Smith","Position":"Software Engineer","Department":"Engineering","Salary":85000,"Hire Date":"January15,2023"});
+
+Query2-
+
+ db.employee.updateMany({"Position":"Software Engineer"},{$set:{"Salary":90000}});
+
+Query3-
+
+ db.employee.find({$and:[{"Department":"Engineering"},{"Salary":{$gt:80000}}]});
+
+Query4-
+ db.employee.deleteMany({"Department":"Marketing"});
+
+Query5-
+ db.createCollection("Orders");
+db.Orders.insertOne({"order_date":"2023-10-23","total_price":80,"order_by":"XYZ"});
+db.Orders.aggregate([ { $match: { order_date: { $gte: "2023-08-23", $lte: "2023-10-23" } } }, { $group: { _id: null, totalrevenue: { $sum: "$total_price" } } }] );
+
+Query6-
+db.createCollection("Products");
+db.Products.insertOne({"Product_code":101,"Product_name":"ToothPaste","Product_category":"Paste","Product_price":90,"Product_quantity":9})
+db.Products.createIndex({"Product_code":1});
+db.Products.getIndexes();
